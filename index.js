@@ -1,14 +1,23 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config();   // 👈 important
+require('dotenv').config();
 
 const app = express();
 
-app.use(cors());
+// ✅ Proper CORS configuration
+app.use(cors({
+  origin: [
+    "http://localhost:5173", // local dev
+    "https://client-amber-three-51.vercel.app" // production frontend
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 app.use(express.json());
 
-// 👇 yaha localhost hata ke env variable use karenge
+// ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB is connected");
@@ -27,7 +36,7 @@ app.use('/api/examinee', require('./routes/examineeRoute'));
 app.use('/api/message', require('./routes/messageRoute'));
 app.use('/api/admindashboard', require('./routes/adminDashboard'));
 
-// 👇 PORT bhi dynamic rakhenge (Render ke liye important)
+// ✅ Dynamic port (Render required)
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
